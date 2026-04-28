@@ -677,22 +677,10 @@ function getStreak(records) {
   return s;
 }
 
-// ── Init sample data ──
+// ── Init data ──
 function initSampleData() {
-  const data = load();
-  if (Object.keys(data).length === 0) {
-    const sample = {};
-    for (let i = 1; i <= 5; i++) {
-      const d = new Date(); d.setDate(d.getDate() - i);
-      const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-      sample[k] = [
-        { id: uid(), event: '早上咖啡特别香，一口下去整个人醒了', reason: '小小满足感提醒我生活还是挺有味道的' },
-        { id: uid(), event: '同事夸我方案做得很细心', reason: '被看见的感觉让我觉得努力是值得的' },
-        { id: uid(), event: '傍晚散步，天空是漂亮的橙红色', reason: '美的东西本来就值得停下来欣赏' },
-      ];
-    }
-    save(sample);
-  }
+  // Clear old data and start fresh
+  localStorage.removeItem('xgy_v3');
 }
 
 // ── Tab switching ──
