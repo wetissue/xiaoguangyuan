@@ -1227,17 +1227,7 @@ function renderHistory() {
 
   const content = document.getElementById('history-content');
 
-  if (allDates.length === 0) {
-    content.innerHTML = `
-      <div class="empty-state">
-        <span style="font-size:48px">📭</span>
-        <p style="font-weight:600;font-size:15px;color:#c8a882">还没有记录</p>
-        <p style="font-size:13px;color:#b8a080">从首页开始记录今天的开心事吧</p>
-      </div>`;
-    return;
-  }
-
-  // Mini calendar
+  // Mini calendar (always show)
   const now = new Date();
   const yr = now.getFullYear(), mo = now.getMonth() + 1;
   const daysInMonth = new Date(yr, mo, 0).getDate();
@@ -1265,6 +1255,17 @@ function renderHistory() {
         }).join('')}
       </div>
     </div>`;
+
+  if (allDates.length === 0) {
+    html += `
+      <div class="empty-state">
+        <span style="font-size:48px">📭</span>
+        <p style="font-weight:600;font-size:15px;color:#c8a882">还没有记录</p>
+        <p style="font-size:13px;color:#b8a080">从首页开始记录今天的开心事吧</p>
+      </div>`;
+    content.innerHTML = html;
+    return;
+  }
 
   // Date list
   html += '<div class="history-list">';
