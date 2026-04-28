@@ -808,34 +808,46 @@ function showScreen(id) {
 }
 
 async function doLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const pass = document.getElementById('login-password').value;
-  const errEl = document.getElementById('login-error');
-  errEl.textContent = '';
-  if (!email || !pass) { errEl.textContent = '请填写邮箱和密码'; return; }
-  const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
-  if (error) {
-    const msgs = {
-      'Invalid login credentials': '邮箱或密码错误',
-      'Email not confirmed': '请先验证邮箱',
-    };
-    errEl.textContent = msgs[error.message] || error.message;
+  try {
+    const email = document.getElementById('login-email').value.trim();
+    const pass = document.getElementById('login-password').value;
+    const errEl = document.getElementById('login-error');
+    errEl.textContent = '';
+    if (!email || !pass) { errEl.textContent = '请填写邮箱和密码'; return; }
+    errEl.textContent = '正在登录...';
+    const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+    if (error) {
+      const msgs = {
+        'Invalid login credentials': '邮箱或密码错误',
+        'Email not confirmed': '请先验证邮箱',
+      };
+      errEl.textContent = msgs[error.message] || error.message;
+    }
+  } catch (e) {
+    document.getElementById('login-error').textContent = '登录出错: ' + e.message;
   }
 }
 
 async function doRegister() {
-  const email = document.getElementById('login-email').value.trim();
-  const pass = document.getElementById('login-password').value;
-  const errEl = document.getElementById('login-error');
-  errEl.textContent = '';
-  if (!email || !pass) { errEl.textContent = '请填写邮箱和密码'; return; }
-  if (pass.length < 6) { errEl.textContent = '密码至少需要6位'; return; }
-  const { error } = await supabase.auth.signUp({ email, password: pass });
-  if (error) {
-    const msgs = {
-      'User already registered': '该邮箱已注册，请直接登录',
-    };
-    errEl.textContent = msgs[error.message] || error.message;
+  try {
+    const email = document.getElementById('login-email').value.trim();
+    const pass = document.getElementById('login-password').value;
+    const errEl = document.getElementById('login-error');
+    errEl.textContent = '';
+    if (!email || !pass) { errEl.textContent = '请填写邮箱和密码'; return; }
+    if (pass.length < 6) { errEl.textContent = '密码至少需要6位'; return; }
+    errEl.textContent = '正在注册...';
+    const { data, error } = await supabase.auth.signUp({ email, password: pass });
+    if (error) {
+      const msgs = {
+        'User already registered': '该邮箱已注册，请直接登录',
+      };
+      errEl.textContent = msgs[error.message] || error.message;
+    } else {
+      errEl.textContent = '注册成功，正在登录...';
+    }
+  } catch (e) {
+    document.getElementById('login-error').textContent = '注册出错: ' + e.message;
   }
 }
 
