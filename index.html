@@ -575,6 +575,7 @@
     <div class="login-error" id="login-error"></div>
     <button class="login-btn primary" onclick="doLogin()">登录</button>
     <button class="login-btn secondary" onclick="doRegister()">注册新账号</button>
+    <div style="text-align:center;color:#ccc;font-size:11px;margin-top:20px;">v2.0</div>
   </div>
 
   <!-- ══ LOADING ══ -->
@@ -710,11 +711,15 @@ const LIGHT_COLORS = ['#ffefd4','#ffdece','#fff3d0'];
 const NUM_NAMES = ['一','二','三'];
 
 // ── Supabase Init ──
-if (!window.supabase) { alert('网络加载失败，请检查网络连接后重试'); }
-const supabase = window.supabase.createClient(
-  'https://ubuthvnbbrwvefamhswn.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVidXRodm5iYnJ3dmVmYW1oc3duIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTg4OTMsImV4cCI6MjA5MjkzNDg5M30.ot10WvLw1_T1fxdMkRdd9nTzG1UuN3zQfYpN-zzrKks'
-);
+let supabase;
+try {
+  supabase = window.supabase.createClient(
+    'https://ubuthvnbbrwvefamhswn.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVidXRodm5iYnJ3dmVmYW1oc3duIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNTg4OTMsImV4cCI6MjA5MjkzNDg5M30.ot10WvLw1_T1fxdMkRdd9nTzG1UuN3zQfYpN-zzrKks'
+  );
+} catch(e) {
+  alert('Supabase初始化失败: ' + e.message);
+}
 
 // ── State ──
 let currentTab = 'home';
