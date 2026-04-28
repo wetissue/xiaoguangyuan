@@ -13,6 +13,11 @@
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
@@ -477,6 +482,69 @@
       justify-content: center; gap: 12px; padding: 60px;
     }
 
+    /* ── Login ── */
+    .login-view {
+      display: none; flex-direction: column;
+      align-items: center; justify-content: center;
+      height: 100dvh; padding: 40px 30px;
+      background: #FFF8F0; text-align: center;
+    }
+    .login-view.active { display: flex; }
+    .login-logo { font-size: 52px; margin-bottom: 8px; }
+    .login-title { font-size: 26px; font-weight: 700; color: #3a2818; margin-bottom: 4px; }
+    .login-sub { font-size: 14px; color: #9a7858; margin-bottom: 32px; }
+    .login-input {
+      width: 100%; padding: 14px 16px; border: 1.5px solid #f0dfc8;
+      border-radius: 14px; font-size: 16px; color: #3a2818;
+      background: #FFFDF7; outline: none; font-family: inherit;
+      margin-bottom: 12px; transition: border-color 0.2s;
+    }
+    .login-input:focus { border-color: #f5a840; }
+    .login-input::placeholder { color: #c8a888; }
+    .login-btn {
+      width: 100%; padding: 15px; border: none; border-radius: 16px;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: opacity 0.15s;
+    }
+    .login-btn:active { opacity: 0.8; }
+    .login-btn.primary {
+      background: linear-gradient(135deg, #f5a840, #e8795a);
+      color: white; box-shadow: 0 4px 14px rgba(240,120,60,.25);
+      margin-bottom: 10px;
+    }
+    .login-btn.secondary {
+      background: white; color: #f5a840;
+      border: 1.5px solid #f0dfc8;
+    }
+    .login-error {
+      color: #e05a3a; font-size: 13px; margin-bottom: 12px;
+      min-height: 20px;
+    }
+    .login-loading {
+      color: #9a7858; font-size: 14px;
+    }
+
+    /* ── Profile page ── */
+    .profile-page {
+      padding: calc(env(safe-area-inset-top, 44px) + 20px) 22px 20px;
+      display: flex; flex-direction: column; align-items: center;
+      height: 100%; background: #fdf7f0;
+    }
+    .profile-avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg, #f5a840, #e8795a);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; color: white; font-weight: 700;
+      margin-bottom: 14px;
+    }
+    .profile-email { font-size: 14px; color: #9a7858; margin-bottom: 24px; }
+    .profile-btn {
+      width: 100%; padding: 14px; border: 1.5px solid #f0dfc8;
+      border-radius: 16px; background: white; font-size: 15px;
+      font-weight: 600; color: #e05a3a; cursor: pointer;
+      font-family: inherit;
+    }
+
     /* ── Nav bar ── */
     .nav-bar {
       flex-shrink: 0;
@@ -499,8 +567,26 @@
 <body>
 <div class="app">
 
+  <!-- ══ LOGIN ══ -->
+  <div class="login-view active" id="v-login">
+    <div class="login-logo">🌻</div>
+    <div class="login-title">小光源</div>
+    <div class="login-sub">每天记录 3 件开心的事</div>
+    <input class="login-input" id="login-email" type="email" placeholder="邮箱地址" autocomplete="email">
+    <input class="login-input" id="login-password" type="password" placeholder="密码（至少6位）" autocomplete="current-password">
+    <div class="login-error" id="login-error"></div>
+    <button class="login-btn primary" onclick="doLogin()">登录</button>
+    <button class="login-btn secondary" onclick="doRegister()">注册新账号</button>
+  </div>
+
+  <!-- ══ LOADING ══ -->
+  <div class="login-view" id="v-loading">
+    <div class="login-logo">🌻</div>
+    <div class="login-loading">加载中...</div>
+  </div>
+
   <!-- ══ HOME ══ -->
-  <div class="view active" id="v-home">
+  <div class="view" id="v-home">
     <svg class="home-blob1" width="200" height="180" viewBox="0 0 200 180">
       <circle cx="180" cy="20" r="80" fill="#f5ddb0"/>
       <circle cx="140" cy="100" r="40" fill="#f8c87a" opacity="0.5"/>
@@ -555,11 +641,11 @@
 
   <!-- ══ PROFILE ══ -->
   <div class="view" id="v-profile">
-    <div class="coming-soon">
-      <div class="coming-icon">👤</div>
-      <div style="font-weight:700;font-size:18px;color:#3a2818;">我的</div>
-      <div class="coming-badge">即将上线</div>
-      <p style="font-size:13px;color:#b8a080;text-align:center;line-height:1.8;">正在精心打磨这个功能<br>敬请期待 ✨</p>
+    <div class="profile-page">
+      <div class="profile-avatar" id="profile-avatar"></div>
+      <div style="font-weight:700;font-size:20px;color:#3a2818;margin-bottom:4px;">我的</div>
+      <div class="profile-email" id="profile-email"></div>
+      <button class="profile-btn" onclick="doLogout()">退出登录</button>
     </div>
     <div style="height:calc(env(safe-area-inset-bottom,16px) + 70px);flex-shrink:0;"></div>
   </div>
@@ -587,10 +673,10 @@
       </svg>
       <span>拓展</span>
     </button>
-    <button class="tab-item disabled" id="tab-profile" onclick="switchTab('profile')">
+    <button class="tab-item inactive" id="tab-profile" onclick="switchTab('profile')">
       <svg viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="8" r="4" stroke="#d0c0aa" stroke-width="1.8"/>
-        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#d0c0aa" stroke-width="1.8" stroke-linecap="round"/>
+        <circle id="tab-prof-circle" cx="12" cy="8" r="4" stroke="#b8a48e" stroke-width="1.8"/>
+        <path id="tab-prof-path" d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#b8a48e" stroke-width="1.8" stroke-linecap="round"/>
       </svg>
       <span>我的</span>
     </button>
@@ -625,16 +711,70 @@ const BG_COLORS = ['#fff9f0','#fff5f0','#fffbf0'];
 const LIGHT_COLORS = ['#ffefd4','#ffdece','#fff3d0'];
 const NUM_NAMES = ['一','二','三'];
 
+// ── Firebase Init ──
+firebase.initializeApp({
+  apiKey: "AIzaSyBH8jmDZZ3u_hUfBxFY76kPskOvhJf9tbQ",
+  authDomain: "xiaoguangyuan824.firebaseapp.com",
+  projectId: "xiaoguangyuan824",
+  storageBucket: "xiaoguangyuan824.firebasestorage.app",
+  messagingSenderId: "592175790922",
+  appId: "1:592175790922:web:3273d23058d86f00349fb3"
+});
+const auth = firebase.auth();
+const db = firebase.firestore();
+
 // ── State ──
 let currentTab = 'home';
-let editingEntry = null; // { dateKey, idx }
-let deleteTarget = null; // { dateKey, idx }
+let editingEntry = null;
+let deleteTarget = null;
 let historyExpanded = null;
 let openEntries = {};
+let appData = {}; // cached data from Firestore
+let currentUser = null;
 
-// ── Storage ──
-function load() { try { return JSON.parse(localStorage.getItem('xgy_v3') || '{}'); } catch { return {}; } }
-function save(d) { localStorage.setItem('xgy_v3', JSON.stringify(d)); }
+// ── Storage (Firestore) ──
+function load() { return appData; }
+
+function save(d) {
+  appData = d;
+  if (!currentUser) return;
+  // Sync changed dates to Firestore
+  const ref = db.collection('users').doc(currentUser.uid).collection('days');
+  const allKeys = new Set([...Object.keys(d)]);
+  allKeys.forEach(key => {
+    if (d[key] && d[key].length > 0) {
+      ref.doc(key).set({ entries: d[key] });
+    } else {
+      ref.doc(key).delete().catch(() => {});
+    }
+  });
+}
+
+function saveDay(dateKey, entries) {
+  if (entries && entries.length > 0) {
+    appData[dateKey] = entries;
+  } else {
+    delete appData[dateKey];
+  }
+  if (!currentUser) return;
+  const ref = db.collection('users').doc(currentUser.uid).collection('days').doc(dateKey);
+  if (entries && entries.length > 0) {
+    ref.set({ entries });
+  } else {
+    ref.delete().catch(() => {});
+  }
+}
+
+async function loadAllFromFirestore() {
+  if (!currentUser) return {};
+  const snap = await db.collection('users').doc(currentUser.uid).collection('days').get();
+  const data = {};
+  snap.forEach(doc => {
+    data[doc.id] = doc.data().entries || [];
+  });
+  return data;
+}
+
 function todayKey() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -677,11 +817,88 @@ function getStreak(records) {
   return s;
 }
 
-// ── Init data ──
-function initSampleData() {
-  // Clear old data and start fresh
-  localStorage.removeItem('xgy_v3');
+// ── Auth ──
+function showScreen(id) {
+  document.querySelectorAll('.login-view,.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  errEl.textContent = '';
+  if (!email || !pass) { errEl.textContent = '请填写邮箱和密码'; return; }
+  try {
+    await auth.signInWithEmailAndPassword(email, pass);
+  } catch(e) {
+    const msgs = {
+      'auth/user-not-found': '账号不存在，请先注册',
+      'auth/wrong-password': '密码错误',
+      'auth/invalid-email': '邮箱格式不正确',
+      'auth/invalid-credential': '邮箱或密码错误',
+      'auth/too-many-requests': '尝试次数过多，请稍后再试',
+    };
+    errEl.textContent = msgs[e.code] || e.message;
+  }
+}
+
+async function doRegister() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  errEl.textContent = '';
+  if (!email || !pass) { errEl.textContent = '请填写邮箱和密码'; return; }
+  if (pass.length < 6) { errEl.textContent = '密码至少需要6位'; return; }
+  try {
+    await auth.createUserWithEmailAndPassword(email, pass);
+  } catch(e) {
+    const msgs = {
+      'auth/email-already-in-use': '该邮箱已注册，请直接登录',
+      'auth/invalid-email': '邮箱格式不正确',
+      'auth/weak-password': '密码太弱，至少需要6位',
+    };
+    errEl.textContent = msgs[e.code] || e.message;
+  }
+}
+
+function doLogout() {
+  auth.signOut();
+}
+
+// Listen for auth state changes
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    currentUser = user;
+    // Show loading
+    document.querySelectorAll('.login-view').forEach(v => v.classList.remove('active'));
+    document.getElementById('v-loading').classList.add('active');
+    // Load data from Firestore
+    try {
+      appData = await loadAllFromFirestore();
+    } catch(e) {
+      console.error('Failed to load data:', e);
+      appData = {};
+    }
+    // Update profile page
+    document.getElementById('profile-email').textContent = user.email;
+    document.getElementById('profile-avatar').textContent = (user.email || '?')[0].toUpperCase();
+    // Show app
+    document.getElementById('v-loading').classList.remove('active');
+    document.getElementById('tab-bar').classList.remove('hidden');
+    switchTab('home');
+  } else {
+    currentUser = null;
+    appData = {};
+    // Show login
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('tab-bar').classList.add('hidden');
+    document.getElementById('v-login').classList.add('active');
+    document.getElementById('login-email').value = '';
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-error').textContent = '';
+  }
+});
 
 // ── Tab switching ──
 function switchTab(tab) {
@@ -704,6 +921,9 @@ function switchTab(tab) {
   document.getElementById('tab-hist-rect').setAttribute('fill', histActive ? 'rgba(245,168,64,0.12)' : 'none');
   document.getElementById('tab-hist-rect').setAttribute('stroke', histActive ? '#f5a840' : '#b8a48e');
   document.getElementById('tab-hist-path').setAttribute('stroke', histActive ? '#f5a840' : '#b8a48e');
+  const profActive = tab === 'profile';
+  document.getElementById('tab-prof-circle').setAttribute('stroke', profActive ? '#f5a840' : '#b8a48e');
+  document.getElementById('tab-prof-path').setAttribute('stroke', profActive ? '#f5a840' : '#b8a48e');
 
   // Always show the view first, then render content
   const viewId = { home:'v-home', history:'v-history', explore:'v-explore', profile:'v-profile' }[tab];
@@ -1111,21 +1331,18 @@ function saveNewEntry() {
   const re = document.getElementById('inp-reason').value.trim();
   if (!ev || !re) return;
 
-  // Dismiss keyboard before switching screen (fixes iOS viewport issues)
   document.activeElement && document.activeElement.blur();
 
-  const data = load();
   const today = todayKey();
-  if (!data[today]) data[today] = [];
-  const step = data[today].length;
+  if (!appData[today]) appData[today] = [];
+  const step = appData[today].length;
   if (step >= 3) return;
-  data[today].push({ id: uid(), event: ev, reason: re });
-  save(data);
+  appData[today].push({ id: uid(), event: ev, reason: re });
+  saveDay(today, appData[today]);
 
   const newCount = step + 1;
   const allDone = newCount === 3;
 
-  // Small delay to let iOS keyboard fully dismiss before rendering new screen
   setTimeout(() => {
     window.scrollTo(0, 0);
     showSavedScreen(step, newCount, allDone);
@@ -1138,12 +1355,11 @@ function saveEditEntry() {
   const re = document.getElementById('inp-reason').value.trim();
   if (!ev || !re) return;
 
-  const data = load();
-  const arr = data[editingEntry.dateKey];
+  const arr = appData[editingEntry.dateKey];
   if (arr && arr[editingEntry.idx]) {
     arr[editingEntry.idx].event = ev;
     arr[editingEntry.idx].reason = re;
-    save(data);
+    saveDay(editingEntry.dateKey, arr);
   }
   closeAdd();
 }
@@ -1196,11 +1412,10 @@ function cancelDelete() {
 }
 function confirmDelete() {
   if (!deleteTarget) return;
-  const data = load();
-  if (data[deleteTarget.dateKey]) {
-    data[deleteTarget.dateKey].splice(deleteTarget.idx, 1);
-    if (data[deleteTarget.dateKey].length === 0) delete data[deleteTarget.dateKey];
-    save(data);
+  const arr = appData[deleteTarget.dateKey];
+  if (arr) {
+    arr.splice(deleteTarget.idx, 1);
+    saveDay(deleteTarget.dateKey, arr.length > 0 ? arr : null);
   }
   deleteTarget = null;
   document.getElementById('delete-overlay').style.display = 'none';
@@ -1426,8 +1641,8 @@ function toggleHistoryDate(date) {
 }
 
 // ── Init ──
-initSampleData();
-renderHome();
+// Auth state listener handles everything — shows login or app
+document.getElementById('tab-bar').classList.add('hidden');
 </script>
 </body>
 </html>
