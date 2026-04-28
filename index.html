@@ -1302,16 +1302,20 @@ function renderHistory() {
     if (open) {
       html += '<div class="history-detail">';
       recs.forEach((r, i) => {
+        const reasonText = stripPrefix(esc(r.reason), '因为');
+        const eventText = stripPrefix(esc(r.event), '所以');
         html += `
-          <div class="history-entry" style="background:${BG_COLORS[i]}">
-            <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px">
-              <span style="font-size:14px">${EMOJIS[i]}</span>
-              <span style="font-weight:600;font-size:12px;color:${ACCENTS[i]}">第${NUM_NAMES[i]}件开心事</span>
-            </div>
-            <div style="font-size:13px;color:#3a2818;line-height:1.7;margin-bottom:6px">${esc(r.event)}</div>
-            <div style="border-top:1px dashed ${ACCENTS[i]}44;padding-top:7px">
-              <div style="font-size:11px;color:#c8a882;margin-bottom:3px">因为</div>
-              <div style="font-size:12px;color:#7a5c40;line-height:1.7;font-style:italic">"${esc(r.reason)}"</div>
+          <div class="history-entry" style="background:${BG_COLORS[i]};border:1px solid ${ACCENTS[i]}22;">
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <div style="font-size:16px;flex-shrink:0;margin-top:2px">${EMOJIS[i]}</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:14px;color:#3a2818;line-height:1.5;">
+                  <span>因为… </span><span style="font-weight:600">${reasonText}</span>
+                </div>
+                <div style="font-size:12px;color:#9a7858;line-height:1.6;margin-top:3px;">
+                  <span>所以… </span><span style="font-weight:600">${eventText}</span>
+                </div>
+              </div>
             </div>
           </div>`;
       });
