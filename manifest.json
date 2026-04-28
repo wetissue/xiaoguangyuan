@@ -2,7 +2,7 @@
   "name": "小光源",
   "short_name": "小光源",
   "description": "每天记录3件开心的事",
-  "start_url": "./小光源.html",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#FFF8F0",
   "theme_color": "#f5a840",
