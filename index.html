@@ -424,6 +424,7 @@
       height: 100%; display: flex; flex-direction: column;
       align-items: center; justify-content: center; gap: 14px;
       padding: 40px; background: #fdf7f0;
+      overflow-y: auto; -webkit-overflow-scrolling: touch;
     }
     .saved-emoji {
       font-size: 68px;
@@ -1118,6 +1119,9 @@ function saveNewEntry() {
   const re = document.getElementById('inp-reason').value.trim();
   if (!ev || !re) return;
 
+  // Dismiss keyboard before switching screen (fixes iOS viewport issues)
+  document.activeElement && document.activeElement.blur();
+
   const data = load();
   const today = todayKey();
   if (!data[today]) data[today] = [];
@@ -1128,7 +1132,12 @@ function saveNewEntry() {
 
   const newCount = step + 1;
   const allDone = newCount === 3;
-  showSavedScreen(step, newCount, allDone);
+
+  // Small delay to let iOS keyboard fully dismiss before rendering new screen
+  setTimeout(() => {
+    window.scrollTo(0, 0);
+    showSavedScreen(step, newCount, allDone);
+  }, 150);
 }
 
 function saveEditEntry() {
