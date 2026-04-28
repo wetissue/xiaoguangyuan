@@ -717,19 +717,15 @@ function switchTab(tab) {
   document.getElementById('tab-hist-rect').setAttribute('stroke', histActive ? '#f5a840' : '#b8a48e');
   document.getElementById('tab-hist-path').setAttribute('stroke', histActive ? '#f5a840' : '#b8a48e');
 
-  if (tab === 'home') {
-    renderHome();
-    document.getElementById('v-home').classList.add('active');
-  } else if (tab === 'history') {
-    historyExpanded = null;
-    renderHistory();
-    document.getElementById('v-history').classList.add('active');
-  } else if (tab === 'explore') {
-    document.getElementById('v-explore').classList.add('active');
-  } else if (tab === 'profile') {
-    document.getElementById('v-profile').classList.add('active');
-  }
+  // Always show the view first, then render content
+  const viewId = { home:'v-home', history:'v-history', explore:'v-explore', profile:'v-profile' }[tab];
+  if (viewId) document.getElementById(viewId).classList.add('active');
   document.getElementById('tab-bar').classList.remove('hidden');
+
+  try {
+    if (tab === 'home') { renderHome(); }
+    else if (tab === 'history') { historyExpanded = null; renderHistory(); }
+  } catch(e) { console.error('render error:', e); }
 }
 
 // ── HOME ──
