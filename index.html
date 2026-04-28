@@ -701,7 +701,11 @@ function switchTab(tab) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.tab-item').forEach(t => {
     t.classList.remove('active','inactive');
-    t.classList.add(t.id === 'tab-'+tab ? 'active' : (t.classList.contains('disabled') ? '' : 'inactive'));
+    if (t.id === 'tab-'+tab) {
+      t.classList.add('active');
+    } else if (!t.classList.contains('disabled')) {
+      t.classList.add('inactive');
+    }
   });
 
   // Update tab icons
